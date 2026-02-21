@@ -25,9 +25,15 @@
       50% { transform: translateY(-10px); }
     }
     
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
     .shake { animation: shake 0.4s; }
     .pulse-glow { animation: pulse-glow 0.6s; }
     .float { animation: float 2s ease-in-out infinite; }
+    .fade-in { animation: fadeIn 0.3s ease-out; }
   </style>
 </head>
 <body class="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 min-h-screen flex items-center justify-center p-4">
@@ -64,7 +70,12 @@
             <div class="text-slate-400 text-sm">Pistas: <span id="clueCount" class="text-yellow-300 font-semibold">0/10</span></div>
           </div>
         </div>
-        <div id="comboDisplay" class="text-2xl font-bold text-green-400"></div>
+        <div class="flex items-center gap-3">
+          <div id="comboDisplay" class="text-2xl font-bold text-green-400"></div>
+          <button onclick="exitGame()" class="text-slate-400 hover:text-yellow-400 transition-colors text-sm font-semibold">
+            ❌ Sair
+          </button>
+        </div>
       </div>
       <!-- Barra de progresso -->
       <div class="bg-slate-600 rounded-full h-3 overflow-hidden">
@@ -219,7 +230,7 @@
       shuffledOptions.forEach(option => {
         const btn = document.createElement('button');
         btn.textContent = option;
-        btn.className = 'w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-4 px-6 rounded-lg transition-all text-lg';
+        btn.className = 'w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-4 px-6 rounded-lg transition-all text-xl';
         btn.onclick = () => checkAnswer(option, q.word, btn);
         optionsContainer.appendChild(btn);
       });
@@ -241,7 +252,7 @@
         // Resposta correta
         correctAnswers++;
         combo++;
-        btnElement.className = 'w-full bg-green-500 text-white font-semibold py-4 px-6 rounded-lg text-lg pulse-glow';
+        btnElement.className = 'w-full bg-green-500 text-white font-semibold py-4 px-6 rounded-lg text-xl pulse-glow';
         feedback.textContent = getCorrectFeedback();
         feedback.className = 'text-center font-semibold text-lg text-green-400';
         sentenceCard.className = 'bg-gradient-to-r from-green-900 to-green-800 rounded-xl p-6 mb-6 border-2 border-green-500';
@@ -249,12 +260,12 @@
         // Resposta errada
         wrongAnswers++;
         combo = 0;
-        btnElement.className = 'w-full bg-red-500 text-white font-semibold py-4 px-6 rounded-lg text-lg shake';
+        btnElement.className = 'w-full bg-red-500 text-white font-semibold py-4 px-6 rounded-lg text-xl shake';
         
         // Destacar resposta correta
         allButtons.forEach(btn => {
           if (btn.textContent === correct) {
-            btn.className = 'w-full bg-green-500 text-white font-semibold py-4 px-6 rounded-lg text-lg pulse-glow';
+            btn.className = 'w-full bg-green-500 text-white font-semibold py-4 px-6 rounded-lg text-xl pulse-glow';
           }
         });
         
@@ -269,7 +280,7 @@
       setTimeout(() => {
         currentQuestionIndex++;
         loadQuestion();
-      }, 1800);
+      }, 1500);
     }
 
     function updateComboDisplay() {
@@ -277,9 +288,17 @@
       if (combo >= 2) {
         const emoji = combo >= 5 ? '🔥🔥' : combo >= 3 ? '🔥' : '✨';
         comboDisplay.textContent = `${emoji} ${combo}x Combo!`;
-        comboDisplay.className = combo >= 5 ? 'text-2xl font-bold text-orange-400' : 'text-2xl font-bold text-green-400';
+        comboDisplay.className = combo >= 5 ? 'text-2xl font-bold text-orange-400 fade-in' : 'text-2xl font-bold text-green-400 fade-in';
       } else {
         comboDisplay.textContent = '';
+        comboDisplay.className = '';
+      }
+    }
+
+    function exitGame() {
+      if (confirm('🚪 Deseja sair da investigação atual? O progresso será perdido.')) {
+        document.getElementById('gameScreen').classList.add('hidden');
+        document.getElementById('startScreen').classList.remove('hidden');
       }
     }
 
